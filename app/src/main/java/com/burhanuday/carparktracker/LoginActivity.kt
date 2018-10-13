@@ -66,6 +66,7 @@ class LoginActivity : AppCompatActivity() {
             preference.edit().putString("email", email).apply()
             val startMain:Intent = Intent(this, MainActivity::class.java)
             startActivity(startMain)
+            finish()
         }
     }
 }
