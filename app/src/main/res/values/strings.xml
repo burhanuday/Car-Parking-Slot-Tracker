@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Car Park Tracker</string>
+    <string name="enter_e_mail_address">Enter e-mail address</string>
+    <string name="login">Login</string>
+    <string name="enter_password">Enter password</string>
+    <string name="arabia_mall">ARABIA MALL</string>
+    <string name="aeon_mall">AEON MALL</string>
+    <string name="client_id">293494183758-8c281g9e8c6dqgh39f3oqehb3kkl3f1a.apps.googleusercontent.com</string>
+    <string name="debug_key">293494183758-tlvhut2actrb0mlcbpkke20qcko9jrbp.apps.googleusercontent.com</string>
+</resources>
