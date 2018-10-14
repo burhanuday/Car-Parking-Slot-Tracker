@@ -16,9 +16,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 class SelectSlot : AppCompatActivity() {
 
     lateinit var mallName:String
+    var mallData:List<MallData>? = null
     var seatList:List<Seat>? = null
     private lateinit var adapter: RecyclerAdapter
-    val BASE_URL = "http://www.mocky.io/v2/"
+    val BASE_URL = "http://5b074d4a.ngrok.io/api/v1/"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,19 +28,22 @@ class SelectSlot : AppCompatActivity() {
 
         recycler_view.layoutManager = GridLayoutManager(this, 5)
 
-
         val retrofit = Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build()
         val restApi = retrofit.create(RESTApi::class.java)
-        val call: Call<List<Seat>> = restApi.getData()
-        call.enqueue(object : Callback<List<Seat>>{
-            override fun onFailure(call: Call<List<Seat>>, t: Throwable) {
-                Log.i("ERROR", t.message)
+        val call: Call<MallData> = restApi.getMall(mallName)
+        call.enqueue(object : Callback<MallData>{
+            override fun onFailure(call: Call<MallData>, t: Throwable) {
+                Log.i("REST", t.message)
             }
 
-            override fun onResponse(call: Call<List<Seat>>, response: retrofit2.Response<List<Seat>>) {
-                seatList = response.body()
+            override fun onResponse(call: Call<MallData>, response: retrofit2.Response<MallData>) {
+                var mall:MallData? = response.body()
+                Log.i("REST", mall!!.data!![0].spot!![0].toString())
+                seatList = mall!!.data!![0].spot
+                //Log.i("REST", mall!!.spot.toString())
                 adapter = RecyclerAdapter(seatList)
                 recycler_view.adapter = adapter
+
             }
         })
     }

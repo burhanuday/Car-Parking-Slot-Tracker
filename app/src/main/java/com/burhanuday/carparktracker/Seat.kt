@@ -1,13 +1,18 @@
 package com.burhanuday.carparktracker
 
-class Seat(){
-    var isBooked:Boolean?=null
-    var name:String?=null
-    var timestamp:String?=null
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
+import org.json.JSONArray
+import org.json.JSONObject
 
-    constructor(isBooked:Boolean, name:String, timestamp:String) : this() {
-        this.isBooked = isBooked
-        this.name = name
-        this.timestamp = timestamp
-    }
+class Seat{
+
+    @SerializedName("spot_id")
+    var spot_id:String?=null
+
+    @SerializedName("_id")
+    var _id:String?=null
+
+    @SerializedName("isBooked")
+    var isBooked:Boolean?=null
 }

@@ -18,13 +18,13 @@ class MainActivity : AppCompatActivity() {
 
         fl_mall_1.setOnClickListener {
             val intent = Intent(this, SelectSlot::class.java)
-            intent.putExtra("mall_name", "aeon")
+            intent.putExtra("mall_name", "mall1")
             startActivity(intent)
         }
 
         fl_mall_2.setOnClickListener{
             val intent = Intent(this, SelectSlot::class.java)
-            intent.putExtra("mall_name", "arabia")
+            intent.putExtra("mall_name", "mall2")
             startActivity(intent)
         }
     }

@@ -21,7 +21,7 @@ class RecyclerAdapter(private val seats: List<Seat>?): RecyclerView.Adapter<Recy
 
     class SeatHolder(v: View): RecyclerView.ViewHolder(v), View.OnClickListener{
         private var view = v
-        private var seat:Seat? = null
+        private lateinit var seat:Seat
 
         init {
             v.setOnClickListener(this)
@@ -46,8 +46,9 @@ class RecyclerAdapter(private val seats: List<Seat>?): RecyclerView.Adapter<Recy
             private val SEAT_KEY = "SEAT"
         }
 
-        fun bindSeat(seat: Seat){
-            this.seat = seat
+        fun bindSeat(seatbind: Seat){
+            this.seat = seatbind
+            view.tv_spot_name.text = seat.spot_id
             if (seat.isBooked!!){
                 view.iv_empty.visibility = View.INVISIBLE
                 view.iv_filled.visibility = View.VISIBLE

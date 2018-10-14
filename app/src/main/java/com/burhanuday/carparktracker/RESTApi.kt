@@ -2,9 +2,10 @@ package com.burhanuday.carparktracker
 
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Path
 
 interface RESTApi {
 
-    @GET("5bae32d52e00006400bb41a1")
-    fun getData(): Call<List<Seat>>
+    @GET("booking/{mall_name}/spots")
+    fun getMall(@Path("mall_name") mallName:String): Call<MallData>
 }
