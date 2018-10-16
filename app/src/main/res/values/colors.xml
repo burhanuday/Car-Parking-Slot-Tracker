@@ -6,4 +6,5 @@
     <color name="login_page_bg">#2692D0</color>
     <color name="button_bg_color">#00A651</color>
     <color name="white">#ffffff</color>
+    <color name="green">#00A651</color>
 </resources>
