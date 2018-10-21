@@ -16,15 +16,15 @@ interface RESTApi {
     @POST("booking/book")
     fun updateSlot(@Body seat: Seat): Call<Seat>
 
-    /*
+
     companion object {
-        fun create(): RESTApi{
-            val retrofit = Retrofit.Builder().baseUrl("http://5b074d4a.ngrok.io/api/v1/")
+        fun create(baseURL:String): RESTApi{
+            val retrofit = Retrofit.Builder().baseUrl(baseURL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build()
 
             return retrofit.create(RESTApi::class.java)
         }
     }
-    */
+
 }

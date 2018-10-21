@@ -1,14 +1,17 @@
 package com.burhanuday.carparktracker
 
 import android.content.DialogInterface
+import android.content.SharedPreferences
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.GridLayoutManager
 import android.util.Log
-import android.view.View
+import android.view.*
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_select_slot.*
+import kotlinx.android.synthetic.main.dialog_change_url.view.*
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import retrofit2.Call
@@ -22,38 +25,19 @@ class SelectSlot : AppCompatActivity() {
     var mallData:List<MallData>? = null
     var seatList:List<Seat>? = null
     private lateinit var adapter: RecyclerAdapter
+    var sharedPreferences:SharedPreferences? = null
+    var restApi:RESTApi? = null
 
-    /*
-    private val restApi by lazy {
-        RESTApi.create()
-    }
-    */
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select_slot)
+        RecyclerAdapter.lastCheckedPos = -1
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(baseContext)
+        restApi = RESTApi.create(sharedPreferences!!.getString("server", "http://c965e998.ngrok.io/api/v1/"))
         mallName = intent.getStringExtra("mall_name")
         recycler_view.layoutManager = GridLayoutManager(this, 5)
-
-        val retrofit = Retrofit.Builder().baseUrl("http://5ecb6243.ngrok.io/api/v1/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-
-        val restApi =  retrofit.create(RESTApi::class.java)
-
-        val call: Call<MallData> = restApi.getMall(mallName)
-        call.enqueue(object : Callback<MallData>{
-            override fun onFailure(call: Call<MallData>, t: Throwable) {
-                Log.i("REST", t.message)
-            }
-
-            override fun onResponse(call: Call<MallData>, response: retrofit2.Response<MallData>) {
-                val mall:MallData? = response.body()
-                seatList = mall!!.data!![0].spot
-                adapter = RecyclerAdapter(seatList)
-                recycler_view.adapter = adapter
-            }
-        })
+        retrieveData()
 
         bt_book_slot.setOnClickListener {
             var alertDialog:AlertDialog? = null
@@ -67,17 +51,20 @@ class SelectSlot : AppCompatActivity() {
             dialogBuilder.setMessage("Are you sure your want to book slot P${toBook+1}?")
             dialogBuilder.setPositiveButton("Book seat") { dialog, which ->
                 alertDialog!!.dismiss()
-                seatList!![toBook].isBooked = true
-                seatList!![toBook].email = "burhanuday"
-                seatList!![toBook].mall = mallName
-                val call:Call<Seat> = restApi.updateSlot(seatList!![toBook])
+                val tempSeat = seatList!![toBook]
+                tempSeat.isBooked = true
+                tempSeat.email = sharedPreferences!!.getString("email", "no email")
+                tempSeat.mall = mallName
+                val call:Call<Seat> = restApi!!.updateSlot(tempSeat)
                 call.enqueue(object : Callback<Seat>{
                     override fun onFailure(call: Call<Seat>, t: Throwable) {
                         Log.i("REST", t.message)
+                        Toast.makeText(baseContext, t.message, Toast.LENGTH_SHORT).show()
                     }
 
                     override fun onResponse(call: Call<Seat>, response: retrofit2.Response<Seat>) {
                         Toast.makeText(baseContext, "Booked successfully", Toast.LENGTH_SHORT).show()
+                        retrieveData()
                     }
                 })
             }
@@ -86,4 +73,22 @@ class SelectSlot : AppCompatActivity() {
             alertDialog.show()
         }
     }
+
+    fun retrieveData(){
+        val call: Call<MallData> = restApi!!.getMall(mallName)
+        call.enqueue(object : Callback<MallData>{
+            override fun onFailure(call: Call<MallData>, t: Throwable) {
+                Log.i("REST", t.message)
+            }
+
+            override fun onResponse(call: Call<MallData>, response: retrofit2.Response<MallData>) {
+                val mall:MallData? = response.body()
+                seatList = mall!!.data!![0].spot
+                adapter = RecyclerAdapter(seatList)
+                recycler_view.adapter = adapter
+            }
+        })
+    }
+
+
 }

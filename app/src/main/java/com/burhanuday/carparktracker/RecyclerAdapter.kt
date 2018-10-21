@@ -1,5 +1,6 @@
 package com.burhanuday.carparktracker
 
+import android.graphics.Color
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -48,11 +49,16 @@ class RecyclerAdapter(private val seats: List<Seat>?): RecyclerView.Adapter<Recy
             if (seat.isBooked!!){
                 view.iv_empty.visibility = View.INVISIBLE
                 view.iv_filled.visibility = View.VISIBLE
+            }else{
+                view.iv_empty.visibility = View.VISIBLE
+                view.iv_filled.visibility = View.INVISIBLE
             }
             if (lastCheckedPos == position){
                 view.iv_empty.setColorFilter(ContextCompat.getColor(view.context, R.color.green))
+                view.tv_spot_name.setTextColor(Color.GREEN)
             }else{
                 view.iv_empty.clearColorFilter()
+                view.tv_spot_name.setTextColor(Color.RED)
             }
         }
     }
