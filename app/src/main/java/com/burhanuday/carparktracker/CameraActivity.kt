@@ -1,9 +1,11 @@
 package com.burhanuday.carparktracker
 
+import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.widget.Toast
 import com.budiyev.android.codescanner.*
@@ -50,7 +52,17 @@ class CameraActivity : AppCompatActivity() {
 
                     override fun onResponse(call: Call<ResponseBody>, response: retrofit2.Response<ResponseBody>) {
                         Toast.makeText(baseContext, response.message(), Toast.LENGTH_SHORT).show()
-                        finish()
+                        val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this@CameraActivity)
+                        alertDialogBuilder.setPositiveButton("OK", object : DialogInterface.OnClickListener{
+                            override fun onClick(dialog: DialogInterface?, which: Int) {
+                                finish()
+                            }
+                        })
+                        alertDialogBuilder.setMessage("Your parking slot has been confirmed successfully")
+                        alertDialogBuilder.setTitle("Congratulations")
+
+                        val alertDialog: AlertDialog = alertDialogBuilder.create()
+                        alertDialog.show()
                     }
                 })
 
