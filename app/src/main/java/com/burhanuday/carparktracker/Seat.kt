@@ -24,4 +24,8 @@ class Seat(){
 
     @SerializedName("mall")
     var mall:String?=null
+
+    override fun toString(): String {
+        return spot_id!!
+    }
 }

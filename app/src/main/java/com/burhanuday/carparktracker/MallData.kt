@@ -5,8 +5,6 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 class MallData{
-
     @SerializedName("data")
     var data:List<MallDataData>?=null
-
 }

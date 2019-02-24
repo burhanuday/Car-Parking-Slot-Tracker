@@ -1,10 +1,15 @@
 package com.burhanuday.carparktracker
 
+import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.Menu
@@ -26,9 +31,12 @@ class MainActivity : AppCompatActivity() {
 
         val actionBar = supportActionBar
         actionBar!!.title = "Car Park Tracker"
-        //actionBar.subtitle = ""
         actionBar.elevation = 4.0F
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(baseContext)
+
+        if (ContextCompat.checkSelfPermission(baseContext, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED){
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 456)
+        }
 
         fl_mall_1.setOnClickListener {
             val intent = Intent(this, SelectSlot::class.java)
@@ -40,6 +48,11 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, SelectSlot::class.java)
             intent.putExtra("mall_name", "mall2")
             startActivity(intent)
+        }
+
+        fab_camera.setOnClickListener{
+            val startCameraIntent = Intent(baseContext, CameraActivity::class.java)
+            startActivity(startCameraIntent)
         }
     }
 
@@ -57,7 +70,7 @@ class MainActivity : AppCompatActivity() {
                         .setView(dialogView)
                         .setTitle("Change server URL")
                 val alertDialog = mBuilder.show()
-                dialogView.et_dialog_url.setText(sharedPreferences!!.getString("server", "http://c965e998.ngrok.io/api/v1/"))
+                dialogView.et_dialog_url.setText(sharedPreferences!!.getString("server", Constants.baseUrl))
                 dialogView.bt_dialog_save.setOnClickListener{
                     val URL = dialogView.et_dialog_url.text.toString()
                     sharedPreferences!!.edit().putString("server", URL).apply()

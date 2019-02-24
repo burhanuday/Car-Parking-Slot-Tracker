@@ -1,10 +1,14 @@
 package com.burhanuday.carparktracker
 
+import android.Manifest
 import android.content.DialogInterface
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.GridLayoutManager
 import android.util.Log
@@ -14,6 +18,8 @@ import kotlinx.android.synthetic.main.activity_select_slot.*
 import kotlinx.android.synthetic.main.dialog_change_url.view.*
 import okhttp3.OkHttpClient
 import okhttp3.Response
+import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Retrofit
@@ -34,7 +40,7 @@ class SelectSlot : AppCompatActivity() {
         setContentView(R.layout.activity_select_slot)
         RecyclerAdapter.lastCheckedPos = -1
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(baseContext)
-        restApi = RESTApi.create(sharedPreferences!!.getString("server", "http://c965e998.ngrok.io/api/v1/"))
+        restApi = RESTApi.create(sharedPreferences!!.getString("server", Constants.baseUrl))
         mallName = intent.getStringExtra("mall_name")
         recycler_view.layoutManager = GridLayoutManager(this, 5)
         retrieveData()
@@ -55,15 +61,24 @@ class SelectSlot : AppCompatActivity() {
                 tempSeat.isBooked = true
                 tempSeat.email = sharedPreferences!!.getString("email", "no email")
                 tempSeat.mall = mallName
-                val call:Call<Seat> = restApi!!.updateSlot(tempSeat)
-                call.enqueue(object : Callback<Seat>{
-                    override fun onFailure(call: Call<Seat>, t: Throwable) {
+                val call:Call<ResponseBody> = restApi!!.updateSlot(tempSeat)
+                call.enqueue(object : Callback<ResponseBody>{
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         Log.i("REST", t.message)
                         Toast.makeText(baseContext, t.message, Toast.LENGTH_SHORT).show()
                     }
 
-                    override fun onResponse(call: Call<Seat>, response: retrofit2.Response<Seat>) {
+                    override fun onResponse(call: Call<ResponseBody>, response: retrofit2.Response<ResponseBody>) {
                         Toast.makeText(baseContext, "Booked successfully", Toast.LENGTH_SHORT).show()
+                        val seat = response.body()!!.string()
+                        try {
+                            var obj: JSONObject = JSONObject(seat)
+                            val booking_id = obj.getString("booking_id")
+                            sharedPreferences!!.edit().putString("booking_id", booking_id).apply()
+                        } catch (t: Throwable) {
+                            Log.e("My App", "Could not parse malformed JSON: \"$seat\"")
+                        }
+                        Log.i("response", seat)
                         retrieveData()
                     }
                 })
