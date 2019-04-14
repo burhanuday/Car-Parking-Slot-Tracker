@@ -79,6 +79,12 @@ class MainActivity : AppCompatActivity() {
 
                 return true
             }
+
+            R.id.menu_wallet -> {
+                val intent = Intent(baseContext, Wallet::class.java)
+                startActivity(intent)
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }

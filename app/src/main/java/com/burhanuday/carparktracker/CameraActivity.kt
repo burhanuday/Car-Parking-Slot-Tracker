@@ -43,7 +43,7 @@ class CameraActivity : AppCompatActivity() {
         codeScanner.decodeCallback = DecodeCallback {
             runOnUiThread {
                 Toast.makeText(this, "Confirming slot: ${it.text}", Toast.LENGTH_LONG).show()
-                val call: Call<ResponseBody> = restApi!!.verifySlot(sharedPreferences!!.getString("booking_id", "notvalid"), it.text)
+                val call: Call<ResponseBody> = restApi!!.verifySlot(sharedPreferences!!.getString("email", "notvalid"), sharedPreferences!!.getString("booking_id", "notvalid"), it.text)
                 call.enqueue(object : Callback<ResponseBody> {
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         Log.i("REST", t.message)

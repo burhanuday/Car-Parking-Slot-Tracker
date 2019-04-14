@@ -14,12 +14,16 @@ import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.activity_select_slot.*
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
 
 class LoginActivity : AppCompatActivity() {
     lateinit var gso: GoogleSignInOptions.Builder
     lateinit var sio: GoogleSignInOptions
     lateinit var preference:SharedPreferences
-
+    var restApi:RESTApi? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +32,8 @@ class LoginActivity : AppCompatActivity() {
         gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
         sio = gso.build()
+
+        restApi = RESTApi.create(preference.getString("server", Constants.baseUrl))
 
         val googleSignInClient = GoogleSignIn.getClient(this, sio)
         val account: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(this)
@@ -63,10 +69,26 @@ class LoginActivity : AppCompatActivity() {
     fun updateUI(account:GoogleSignInAccount?){
         if (account!=null){
             val email:String = account.email!!
-            preference.edit().putString("email", email).apply()
-            val startMain:Intent = Intent(this, MainActivity::class.java)
-            startActivity(startMain)
-            finish()
+            val name:String = account.displayName!!
+            preference.edit().putString("email", email).commit()
+            preference.edit().putString("name", name).commit()
+            createNewUser(name, email)
         }
+    }
+
+    fun createNewUser(name:String, email:String){
+        val call: Call<ResponseBody> = restApi!!.createProfile(name, email)
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.i("REST FAILURE", t.message)
+            }
+
+            override fun onResponse(call: Call<ResponseBody>, response: retrofit2.Response<ResponseBody>) {
+                Log.i("REST SUCCESS", response.message())
+                val startMain:Intent = Intent(baseContext, MainActivity::class.java)
+                startActivity(startMain)
+                finish()
+            }
+        })
     }
 }

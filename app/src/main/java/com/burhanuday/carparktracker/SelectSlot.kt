@@ -74,9 +74,10 @@ class SelectSlot : AppCompatActivity() {
                         try {
                             var obj: JSONObject = JSONObject(seat)
                             val booking_id = obj.getString("booking_id")
-                            sharedPreferences!!.edit().putString("booking_id", booking_id).apply()
+                            Log.i("REST booking id", booking_id)
+                            sharedPreferences!!.edit().putString("booking_id", booking_id).commit()
                         } catch (t: Throwable) {
-                            Log.e("My App", "Could not parse malformed JSON: \"$seat\"")
+                            Log.i("REST error", "Could not parse malformed JSON: \"$seat\"")
                         }
                         Log.i("response", seat)
                         retrieveData()

@@ -21,8 +21,17 @@ interface RESTApi {
     @POST("booking/book")
     fun updateSlot(@Body seat: Seat): Call<ResponseBody>
 
-    @POST("booking/verify/{booking_id}/{code}")
-    fun verifySlot(@Path("booking_id") bookingId:String, @Path("code") code:String): Call<ResponseBody>
+    @POST("booking/verify/{email}/{booking_id}/{code}")
+    fun verifySlot(@Path("email") email:String, @Path("booking_id") bookingId:String, @Path("code") code:String): Call<ResponseBody>
+
+    @POST("booking/user/{name}/{email}")
+    fun createProfile(@Path("name") name:String, @Path("email") email:String): Call<ResponseBody>
+
+    @GET("booking/user/{email}")
+    fun getUserData(@Path("email") email: String): Call<UserData>
+
+    @POST("booking/recharge/{email}/{recharge_amount}")
+    fun rechargeWallet(@Path("email") email: String, @Path("recharge_amount") recharge_amount:String): Call<ResponseBody>
 
 
     companion object {
