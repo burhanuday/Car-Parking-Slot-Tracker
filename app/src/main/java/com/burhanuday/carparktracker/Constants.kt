@@ -6,6 +6,6 @@ package com.burhanuday.carparktracker
 
 class Constants {
     companion object {
-        const val baseUrl = "http://f65e2396.ngrok.io/api/v1/"
+        const val baseUrl = "http://67103af1.ngrok.io/api/v1/"
     }
 }

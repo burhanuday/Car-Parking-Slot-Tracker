@@ -13,9 +13,11 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.GridLayoutManager
 import android.util.Log
 import android.view.*
+import android.widget.EditText
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_select_slot.*
 import kotlinx.android.synthetic.main.dialog_change_url.view.*
+import kotlinx.android.synthetic.main.dialog_confirm.view.*
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import okhttp3.ResponseBody
@@ -53,14 +55,22 @@ class SelectSlot : AppCompatActivity() {
                 return@setOnClickListener
             }
             val dialogBuilder = AlertDialog.Builder(this)
+            val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_confirm, null)
             dialogBuilder.setTitle("Confirmation dialog")
             dialogBuilder.setMessage("Are you sure your want to book slot P${toBook+1}?")
+            dialogBuilder.setView(dialogView)
             dialogBuilder.setPositiveButton("Book seat") { dialog, which ->
                 alertDialog!!.dismiss()
                 val tempSeat = seatList!![toBook]
                 tempSeat.isBooked = true
                 tempSeat.email = sharedPreferences!!.getString("email", "no email")
                 tempSeat.mall = mallName
+                tempSeat.startTime = dialogView.et_time_from.text.toString()
+                tempSeat.endTime = dialogView.et_time_to.text.toString()
+                if (tempSeat.startTime!!.length<=0 || tempSeat.endTime!!.length<=0){
+                    Toast.makeText(baseContext, "Enter valid time", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
                 val call:Call<ResponseBody> = restApi!!.updateSlot(tempSeat)
                 call.enqueue(object : Callback<ResponseBody>{
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {

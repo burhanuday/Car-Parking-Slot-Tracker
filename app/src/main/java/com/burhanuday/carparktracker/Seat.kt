@@ -25,6 +25,12 @@ class Seat(){
     @SerializedName("mall")
     var mall:String?=null
 
+    @SerializedName("start_time")
+    var startTime:String?=null
+
+    @SerializedName("end_time")
+    var endTime:String?=null
+
     override fun toString(): String {
         return spot_id!!
     }

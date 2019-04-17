@@ -5,7 +5,9 @@ import android.content.SharedPreferences
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.v7.app.AlertDialog
 import android.util.Log
+import android.view.LayoutInflater
 import android.widget.Toast
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -15,6 +17,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_select_slot.*
+import kotlinx.android.synthetic.main.dialog_change_url.view.*
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -36,13 +39,27 @@ class LoginActivity : AppCompatActivity() {
         restApi = RESTApi.create(preference.getString("server", Constants.baseUrl))
 
         val googleSignInClient = GoogleSignIn.getClient(this, sio)
-        val account: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(this)
+        val account: GoogleSignInAccount? = null
         updateUI(account)
 
         sign_in_button.setSize(SignInButton.SIZE_WIDE)
         sign_in_button.setOnClickListener{
             val signInIntent = googleSignInClient.signInIntent
             startActivityForResult(signInIntent, 123)
+        }
+
+        iv_settings.setOnClickListener{
+            val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_change_url, null)
+            val mBuilder = AlertDialog.Builder(this)
+                    .setView(dialogView)
+                    .setTitle("Change server URL")
+            val alertDialog = mBuilder.show()
+            dialogView.et_dialog_url.setText(preference!!.getString("server", Constants.baseUrl))
+            dialogView.bt_dialog_save.setOnClickListener{
+                val URL = dialogView.et_dialog_url.text.toString()
+                preference!!.edit().putString("server", URL).apply()
+                alertDialog.dismiss()
+            }
         }
     }
 
